@@ -20,15 +20,26 @@ export const MainPage = () => {
       .map((line) => {
         return line.replace(/<(va|v|q)>(.*)/, (match, tag, expr) => {
           expr = expr.trim();
+
+          // Only process if it starts with a single backslash (e.g. \frac or \sqrt)
           if (expr.startsWith("\\")) {
+            // Escape backslashes
             const escaped = expr.replace(/\\/g, "\\\\");
             return `<${tag}>$${escaped}$`;
-          } else {
-            return match;
           }
+
+          // If already wrapped like $...$, leave it untouched
+          if (expr.startsWith("$") && expr.endsWith("$")) {
+            const inner = expr.slice(1, -1).replace(/\\/g, "\\\\");
+            return `<${tag}>$${inner}$`;
+          }
+
+          // Leave all other content untouched
+          return match;
         });
       })
       .join("\n");
+
     setOutputValue(edited);
   };
 
