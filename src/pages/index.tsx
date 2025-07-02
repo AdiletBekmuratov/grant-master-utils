@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export const MainPage = () => {
   const [inputValue, setInputValue] = useState("");
@@ -46,11 +47,20 @@ export const MainPage = () => {
       })
       .join("\n");
 
+    navigator.clipboard.writeText(outputValue);
     setOutputValue(edited);
+    toast.success("Текст отформатирован и скопирован");
   };
 
   const handleCopyClick = () => {
     navigator.clipboard.writeText(outputValue);
+    toast.success("Текст скопирован");
+  };
+
+  const handleReset = () => {
+    setInputValue("");
+    setOutputValue("");
+    toast.success("Текст очищен");
   };
 
   return (
@@ -83,6 +93,9 @@ export const MainPage = () => {
           <Button onClick={handleProcessClick}>Обработать</Button>
           <Button onClick={handleCopyClick} disabled={!outputValue}>
             Копировать
+          </Button>
+          <Button variant={"destructive"} onClick={handleReset}>
+            Очистить
           </Button>
         </CardFooter>
       </Card>

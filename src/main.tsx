@@ -1,6 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router";
+import { Toaster } from "sonner";
+
 import { MainPage } from "./pages";
 
 import "./index.css";
@@ -12,5 +14,6 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/" element={<MainPage />} />
       </Routes>
     </BrowserRouter>
+    <Toaster position="top-right" richColors />
   </StrictMode>
 );
