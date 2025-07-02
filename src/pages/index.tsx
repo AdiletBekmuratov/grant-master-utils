@@ -18,25 +18,31 @@ export const MainPage = () => {
     const lines = inputValue.split("\n");
     const edited = lines
       .map((line) => {
-        return line.replace(/<(va|v|q)>(.*)/, (match, tag, expr) => {
-          expr = expr.trim();
+        return line.replace(
+          /<(va|v|q)>(.*)/,
+          (match: string, tag: string, expr: string) => {
+            expr = expr.trim();
 
-          // Only process if it starts with a single backslash (e.g. \frac or \sqrt)
-          if (expr.startsWith("\\")) {
-            // Escape backslashes
-            const escaped = expr.replace(/\\/g, "\\\\");
-            return `<${tag}>$${escaped}$`;
+            // Case 1: already has $...$, escape backslashes inside them only
+            if (expr.includes("$")) {
+              // Replace content inside $...$ only
+              expr = expr.replace(/\$(.*?)\$/g, (_, latex) => {
+                const escaped = latex.replace(/\\/g, "\\\\");
+                return `$${escaped}$`;
+              });
+              return `<${tag}>${expr}`;
+            }
+
+            // Case 2: if starts with \ → wrap and escape
+            if (expr.startsWith("\\")) {
+              const escaped = expr.replace(/\\/g, "\\\\");
+              return `<${tag}>$${escaped}$`;
+            }
+
+            // Case 3: leave untouched
+            return match;
           }
-
-          // If already wrapped like $...$, leave it untouched
-          if (expr.startsWith("$") && expr.endsWith("$")) {
-            const inner = expr.slice(1, -1).replace(/\\/g, "\\\\");
-            return `<${tag}>$${inner}$`;
-          }
-
-          // Leave all other content untouched
-          return match;
-        });
+        );
       })
       .join("\n");
 
